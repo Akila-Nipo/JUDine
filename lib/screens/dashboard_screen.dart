@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'add_meal_screen.dart';
 import 'view_items_screen.dart';
+import 'view_orders_screen.dart'; // Import the screen for viewing orders
 import 'package:firebase_auth/firebase_auth.dart';
 import '../main.dart'; // Import HomePage to navigate back after logout
 
@@ -61,6 +62,16 @@ class DashboardScreen extends StatelessWidget {
             ),
             SizedBox(height: 20), // Space between buttons
 
+            // Button to view orders
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ViewOrderScreen()),
+                );
+              },
+              child: Text('View Orders'),
+            ),
 
           ],
         ),

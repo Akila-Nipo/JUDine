@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'screens/login_screen.dart';  // Import your login screen
+import 'screens/login_screen.dart';  // Import Superuser login screen
+import 'screens/order_meals_login_screen.dart';  // Import Order Meals login screen
+import 'screens/order_meals_page.dart';
+import 'screens/order_confirmation_page.dart';
 
 void main() async {
-  // Ensure Firebase is initialized before the app runs
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
@@ -14,8 +16,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Your App',
-      home: HomePage(),  // Set home page to show Superuser login button
+      title: 'JUDine App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: HomePage(),
+      routes: {
+        '/superuserLogin': (context) => LoginScreen(),
+        '/orderMealsLogin': (context) => OrderMealsLoginScreen(),
+        '/orderMealsPage': (context) => OrderMealsPage(), // Meal selection page
+        '/orderConfirmation': (context) => OrderConfirmationPage(
+          orderNumber: '', // Initialize with the actual order number
+          orderDetails: [], // Initialize with the actual order details
+          totalPrice: 0.0,  // Initialize with the actual total price
+        ), // Order Confirmation Page
+      },
     );
   }
 }
@@ -26,15 +41,23 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Welcome')),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            // Navigate to login screen when button is pressed
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => LoginScreen()),
-            );
-          },
-          child: Text('Superuser Login'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/superuserLogin');
+              },
+              child: Text('Superuser Login'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/orderMealsLogin');
+              },
+              child: Text('Order Meals Login'),
+            ),
+          ],
         ),
       ),
     );
