@@ -4,6 +4,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
+// Import the DashboardScreen class here
+import 'dashboard_screen.dart';  // Ensure this is correct based on your project structure
+
 class AddMealScreen extends StatefulWidget {
   @override
   _AddMealScreenState createState() => _AddMealScreenState();
@@ -32,7 +35,13 @@ class _AddMealScreenState extends State<AddMealScreen> {
   // Add meal and upload image to Firebase
   Future<void> _addMeal() async {
     if (_nameController.text.isEmpty || _image == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fill all fields and select an image.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Fill all fields and select an image.'),
+          backgroundColor: Colors.green, // Success message
+          duration: Duration(seconds: 2), // Quick Snackbar
+        ),
+      );
       return;
     }
 
@@ -52,17 +61,48 @@ class _AddMealScreenState extends State<AddMealScreen> {
         'imageUrl': imageUrl,
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Meal added successfully!')));
-      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Meal added successfully!'),
+          backgroundColor: Colors.green, // Success message
+          duration: Duration(seconds: 2), // Quick Snackbar
+        ),
+      );
+
+      // Clear all routes and return to DashboardScreen
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => DashboardScreen()),
+            (route) => false, // Removes all routes
+      );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red, // Error message
+          duration: Duration(seconds: 2), // Quick Snackbar
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Add Meal')),
+      appBar: AppBar(
+        title: Text('Add Meal'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            // Clear all navigation history and return to DashboardScreen
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => DashboardScreen()),
+                  (route) => false, // Removes all routes
+            );
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(

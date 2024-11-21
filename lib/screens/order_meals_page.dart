@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'order_confirmation_page.dart';
+import 'order_meals_login_screen.dart';
 
 class OrderMealsPage extends StatefulWidget {
   @override
@@ -61,10 +62,35 @@ class _OrderMealsPageState extends State<OrderMealsPage> {
     );
   }
 
+  void _logout() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => OrderMealsLoginScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Order Meals')),
+      appBar: AppBar(
+        title: Text('Order Meals'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            // Navigate back to the OrderMealsLoginScreen when back arrow is pressed
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => OrderMealsLoginScreen()),
+            );
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: _logout,
+          ),
+        ],
+      ),
       body: DefaultTabController(
         length: 3,
         child: Column(
@@ -89,12 +115,30 @@ class _OrderMealsPageState extends State<OrderMealsPage> {
                       return ListView(
                         children: snapshot.data!.docs.map((doc) {
                           final data = doc.data() as Map<String, dynamic>;
+                          bool isDisabled = data['quantity'] == 0;
+
                           return Card(
                             margin: EdgeInsets.all(8),
+                            color: isDisabled ? Colors.grey[200] : null,
                             child: Column(
                               children: [
                                 ListTile(
-                                  leading: CachedNetworkImage(
+                                  leading: isDisabled
+                                      ? ColorFiltered(
+                                    colorFilter: ColorFilter.mode(
+                                      Colors.grey.withOpacity(0.5), // Subtle grey overlay
+                                      BlendMode.modulate,           // Modulate instead of full saturation
+                                    ),
+                                    child: CachedNetworkImage(
+                                      imageUrl: data['imageUrl'],
+                                      placeholder: (context, url) => CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) => Icon(Icons.error),
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                      : CachedNetworkImage(
                                     imageUrl: data['imageUrl'],
                                     placeholder: (context, url) => CircularProgressIndicator(),
                                     errorWidget: (context, url, error) => Icon(Icons.error),
@@ -102,71 +146,82 @@ class _OrderMealsPageState extends State<OrderMealsPage> {
                                     height: 100,
                                     fit: BoxFit.cover,
                                   ),
-                                  title: Text(data['name']),
+                                  title: Text(
+                                    data['name'],
+                                    style: TextStyle(
+                                      color: isDisabled ? Colors.grey : Colors.black,
+                                    ),
+                                  ),
                                   subtitle: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text('Price: Tk ${data['price']}'),
-                                      Text('Available: ${data['quantity']}'),
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      // Text for Select Quantity
                                       Text(
-                                        'Select Quantity',
+                                        'Price: Tk ${data['price']}',
                                         style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.green[800], // Dark green color for label
+                                          color: isDisabled ? Colors.grey : Colors.black,
                                         ),
                                       ),
-                                      SizedBox(width: 16), // Space between label and quantity selection
-                                      Row(
-                                        children: [
-                                          // Decrement button
-                                          InkWell(
-                                            onTap: () {
-                                              if (_getSelectedItemQuantity(data['name']) > 0) {
-                                                _updateQuantity(data['name'], -1, data['price'], doc.id);
-                                              }
-                                            },
-                                            child: Icon(
-                                              Icons.remove,
-                                              size: 24,
-                                              color: Colors.green[800], // Green color for icon
-                                            ),
-                                          ),
-                                          SizedBox(width: 8), // Space between buttons and quantity
-                                          // Display quantity
-                                          Text(
-                                            '${_getSelectedItemQuantity(data['name'])}',
-                                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                          ),
-                                          SizedBox(width: 8), // Space between quantity and increment button
-                                          // Increment button
-                                          InkWell(
-                                            onTap: () {
-                                              int maxQuantity = data['quantity'];
-                                              if (_getSelectedItemQuantity(data['name']) < maxQuantity) {
-                                                _updateQuantity(data['name'], 1, data['price'], doc.id);
-                                              }
-                                            },
-                                            child: Icon(
-                                              Icons.add,
-                                              size: 24,
-                                              color: Colors.green[800], // Green color for icon
-                                            ),
-                                          ),
-                                        ],
+                                      Text(
+                                        'Available: ${data['quantity']}',
+                                        style: TextStyle(
+                                          color: isDisabled ? Colors.grey : Colors.black,
+                                        ),
                                       ),
                                     ],
                                   ),
                                 ),
+                                if (!isDisabled)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          'Select Quantity',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.green[800],
+                                          ),
+                                        ),
+                                        SizedBox(width: 16),
+                                        Row(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {
+                                                if (_getSelectedItemQuantity(data['name']) > 0) {
+                                                  _updateQuantity(data['name'], -1, data['price'], doc.id);
+                                                }
+                                              },
+                                              child: Icon(
+                                                Icons.remove,
+                                                size: 24,
+                                                color: Colors.green[800],
+                                              ),
+                                            ),
+                                            SizedBox(width: 8),
+                                            Text(
+                                              '${_getSelectedItemQuantity(data['name'])}',
+                                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                            ),
+                                            SizedBox(width: 8),
+                                            InkWell(
+                                              onTap: () {
+                                                int maxQuantity = data['quantity'];
+                                                if (_getSelectedItemQuantity(data['name']) < maxQuantity) {
+                                                  _updateQuantity(data['name'], 1, data['price'], doc.id);
+                                                }
+                                              },
+                                              child: Icon(
+                                                Icons.add,
+                                                size: 24,
+                                                color: Colors.green[800],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                               ],
                             ),
                           );
@@ -190,12 +245,12 @@ class _OrderMealsPageState extends State<OrderMealsPage> {
                   ),
                   Divider(),
                   ...selectedItems.map((item) => Text(
-                    '${item['name']} x ${item['quantity']} = TK ${item['total'].toStringAsFixed(2)} ',
+                    '${item['name']} x ${item['quantity']} = Tk ${item['total'].toStringAsFixed(2)}',
                     style: TextStyle(fontSize: 16),
                   )),
                   SizedBox(height: 8),
                   Text(
-                    'Total Items: ${selectedItems.length}, Total Price: Tk $totalPrice ',
+                    'Total Items: ${selectedItems.length}, Total Price: Tk $totalPrice',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

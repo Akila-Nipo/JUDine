@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:judine/main.dart'; // Import HomePage from main.dart
 
 class OrderMealsLoginScreen extends StatefulWidget {
   @override
@@ -38,44 +39,57 @@ class _OrderMealsLoginScreenState extends State<OrderMealsLoginScreen> {
   }
 
   void _logout() {
-    // You can use Navigator.pop() to go back to the HomePage or any other screen
+    // Logout functionality, go back to HomePage
     Navigator.pop(context);  // This will take the user back to the previous screen
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Order Meals Login')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _login,
-              child: Text('Login to Order'),
-            ),
-            if (_errorMessage.isNotEmpty)
-              Text(
-                _errorMessage,
-                style: TextStyle(color: Colors.red),
+    return WillPopScope(
+      onWillPop: () async {
+        // When the back button is pressed, navigate to HomePage and remove all previous routes
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+              (route) => false, // This condition removes all previous routes from the stack
+        );
+        return false; // Prevent default back action
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Order Meals Login'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(labelText: 'Email'),
               ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _logout,  // Logout functionality
-              child: Text('Logout'),
-            ),
-          ],
+              TextField(
+                controller: _passwordController,
+                decoration: InputDecoration(labelText: 'Password'),
+                obscureText: true,
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _login,
+                child: Text('Login to Order'),
+              ),
+              if (_errorMessage.isNotEmpty)
+                Text(
+                  _errorMessage,
+                  style: TextStyle(color: Colors.red),
+                ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _logout,  // Logout functionality
+                child: Text('Logout'),
+              ),
+            ],
+          ),
         ),
       ),
     );
