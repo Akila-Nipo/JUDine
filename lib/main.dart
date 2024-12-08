@@ -4,6 +4,7 @@ import 'screens/login_screen.dart';  // Import Superuser login screen
 import 'screens/order_meals_login_screen.dart';  // Import Order Meals login screen
 import 'screens/order_meals_page.dart';
 import 'screens/order_confirmation_page.dart';
+import 'screens/feast_registration_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +31,8 @@ class MyApp extends StatelessWidget {
           orderNumber: '', // Initialize with the actual order number
           orderDetails: [], // Initialize with the actual order details
           totalPrice: 0.0,  // Initialize with the actual total price
-        ), // Order Confirmation Page
+        ),
+        '/feastRegistration': (context) => FeastRegistrationScreen(),// Order Confirmation Page
       },
     );
   }
@@ -58,6 +60,14 @@ class HomePage extends StatelessWidget {
               },
               child: Text('Order Meals Login'),
             ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/feastRegistration');
+              },
+              child: Text('Register for Upcoming Feast'),
+            ),
+
           ],
         ),
       ),

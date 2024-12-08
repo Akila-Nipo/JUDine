@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'add_meal_screen.dart';
 import 'view_items_screen.dart';
 import 'view_orders_screen.dart'; // Import the screen for viewing orders
+import 'add_feast_screen.dart'; // Import the Add Feast screen
+import 'view_feast_screen.dart'; // Import the View Feast screen
+import 'view_feast_record_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../main.dart'; // Import HomePage to navigate back after logout
 
@@ -71,6 +74,42 @@ class DashboardScreen extends StatelessWidget {
                 );
               },
               child: Text('View Orders'),
+            ),
+            SizedBox(height: 20), // Space between buttons
+
+            // Button to add feast
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddFeastScreen()),
+                );
+              },
+              child: Text('Add Feast'),
+            ),
+            SizedBox(height: 20), // Space between buttons
+
+            // Button to view feast
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ViewFeastsScreen()),
+                );
+              },
+              child: Text('View Feast'),
+            ),
+            SizedBox(height: 20), // Space between buttons
+
+            // Button to view feast record
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ViewFeastRecordScreen()),
+                );
+              },
+              child: Text('View Feast Record'),
             ),
 
           ],
