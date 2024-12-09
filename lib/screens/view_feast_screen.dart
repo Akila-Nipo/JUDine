@@ -12,6 +12,8 @@ class ViewFeastsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('View Feasts'),
+        backgroundColor: Colors.deepPurple,
+        foregroundColor: Colors.white,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: feastsRef.snapshots(),
@@ -137,12 +139,12 @@ class ViewFeastsScreen extends StatelessWidget {
     );
   }
 
-  /// Edit Feast - Edit popup dialog
   void _editFeast(BuildContext context, QueryDocumentSnapshot feastData) {
     final TextEditingController nameController = TextEditingController(text: feastData['name']);
     final TextEditingController timeController = TextEditingController(text: feastData['feastTime']);
     final TextEditingController dateController = TextEditingController(text: feastData['feastDate']);
     final TextEditingController priceController = TextEditingController(text: feastData['price']?.toString() ?? '');
+    final TextEditingController registrationDeadlineController = TextEditingController(text: feastData['registrationDeadline'] ?? '');  // Add this line
 
     showDialog(
       context: context,
@@ -170,6 +172,10 @@ class ViewFeastsScreen extends StatelessWidget {
                   decoration: InputDecoration(labelText: 'Price'),
                   keyboardType: TextInputType.number,
                 ),
+                TextField(
+                  controller: registrationDeadlineController,  // Add this line
+                  decoration: InputDecoration(labelText: 'Registration Deadline'),  // Add this line
+                ),
               ],
             ),
           ),
@@ -189,6 +195,7 @@ class ViewFeastsScreen extends StatelessWidget {
                     'feastTime': timeController.text,
                     'feastDate': dateController.text,
                     'price': double.tryParse(priceController.text) ?? 0.0,
+                    'registrationDeadline': registrationDeadlineController.text,  // Update registration deadline
                   });
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -207,6 +214,7 @@ class ViewFeastsScreen extends StatelessWidget {
       },
     );
   }
+
 
   /// Delete Feast
   void _confirmDelete(BuildContext context, String feastId) {

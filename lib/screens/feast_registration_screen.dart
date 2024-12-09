@@ -9,13 +9,15 @@ class FeastRegistrationScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Feast Registration"),
+        backgroundColor: Color(0xFF1A2859), // Customized AppBar color
+        foregroundColor: Colors.white,
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('JUDine_Feasts').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              child: CircularProgressIndicator(), // Loader while data is being fetched
+              child: CircularProgressIndicator(),
             );
           }
 
@@ -44,6 +46,10 @@ class FeastRegistrationScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               try {
                 final feast = feasts[index];
+                // Parse the registration deadline as DateTime
+                DateTime registrationDeadline = DateTime.parse(feast['registrationDeadline']);
+                bool isRegistrationClosed = DateTime.now().isAfter(registrationDeadline);
+
                 return _buildFeastCard(
                   context,
                   feast['feastDate'] ?? 'Unknown Date',
@@ -52,6 +58,7 @@ class FeastRegistrationScreen extends StatelessWidget {
                   feast['imageUrl'] ?? '',
                   (feast['price'] ?? 0).toDouble(),
                   feast['registrationDeadline'] ?? 'Unknown Deadline',
+                  isRegistrationClosed,
                 );
               } catch (e) {
                 return Center(
@@ -76,6 +83,7 @@ class FeastRegistrationScreen extends StatelessWidget {
       String imageUrl,
       double price,
       String registrationDeadline,
+      bool isRegistrationClosed,
       ) {
     return Card(
       shape: RoundedRectangleBorder(
@@ -97,7 +105,7 @@ class FeastRegistrationScreen extends StatelessWidget {
           SizedBox(height: 8),
           _buildPriceSection(price),
           SizedBox(height: 8),
-          _buildRegisterButton(context, name, feastDate, feastTime, price),
+          _buildRegisterButton(context, name, feastDate, feastTime, price, isRegistrationClosed),
         ],
       ),
     );
@@ -168,9 +176,17 @@ class FeastRegistrationScreen extends StatelessWidget {
             style: TextStyle(fontSize: 14, color: Colors.grey[700]),
           ),
           SizedBox(height: 2),
-          Text(
-            "Deadline: $registrationDeadline",
-            style: TextStyle(fontSize: 14, color: Colors.redAccent),
+          // Text(
+          //   "Deadline: $registrationDeadline",
+          //   style: TextStyle(fontSize: 14, color: Colors.redAccent),
+          // ),
+          Container(
+            padding: const EdgeInsets.all(8.0),
+            color: Colors.red[100],
+            child: Text(
+              'Registration Deadline: $registrationDeadline',
+              style: TextStyle(fontSize: 14, color: Colors.redAccent),
+            ),
           ),
         ],
       ),
@@ -193,11 +209,14 @@ class FeastRegistrationScreen extends StatelessWidget {
       String feastDate,
       String feastTime,
       double price,
+      bool isRegistrationClosed,
       ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: ElevatedButton(
-        onPressed: () {
+      child: ElevatedButton.icon(
+        onPressed: isRegistrationClosed
+            ? null
+            : () {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -210,7 +229,19 @@ class FeastRegistrationScreen extends StatelessWidget {
             ),
           );
         },
-        child: Text("REGISTER"),
+        icon: Icon(Icons.app_registration, color: Colors.white),
+        label: Text(
+          isRegistrationClosed ? "Registration Closed" : "REGISTER",
+          style: TextStyle(color: Colors.white),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isRegistrationClosed ? Colors.grey : Colors.blueAccent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: EdgeInsets.symmetric(vertical: 9, horizontal: 20),
+          elevation: 5,
+        ),
       ),
     );
   }

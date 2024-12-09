@@ -34,6 +34,8 @@ class _ViewOrderScreenState extends State<ViewOrderScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('View Orders'),
+        backgroundColor:  Color(0xFF1A2859),
+        foregroundColor: Colors.white,
       ),
       body: Column(
         children: [

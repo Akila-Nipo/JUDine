@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:lottie/lottie.dart';
 import 'feast_registration_successful_screen.dart';
 import 'already_registered_screen.dart';
 
-// Authentication screen to register for a feast
 class FeastRegistrationAuthenticationScreen extends StatefulWidget {
   final String feastName;
   final String feastDate;
@@ -31,10 +30,8 @@ class _FeastRegistrationAuthenticationScreenState
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
   bool isLoading = false;
 
-  // Handles authentication, checks registration, or registers
   void _authenticateAndRegister() async {
     if (_formKey.currentState!.validate()) {
       setState(() => isLoading = true);
@@ -98,6 +95,43 @@ class _FeastRegistrationAuthenticationScreenState
           SnackBar(content: Text("You have successfully registered!")),
         );
 
+// Inside your _authenticateAndRegister function:
+        showDialog(
+          context: context,
+          barrierDismissible: false, // Prevent dismissing the dialog by tapping outside
+          builder: (context) {
+            return Dialog(
+              backgroundColor: Colors.black, // Make background transparent
+              child: Column(
+                mainAxisSize: MainAxisSize.min, // Make sure the dialog is only as large as the content
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Lottie.asset(
+                    'assets/fireworks.json', // Your animation file
+                    width: 400, // Set width to control the size of the animation
+                    height: 400, // Set height for the animation
+                    repeat: true, // Stop animation after one loop
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    "Registration Successful!", // The text to display below the animation
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+
+// Wait for the animation to finish before proceeding
+        await Future.delayed(Duration(seconds: 4));
+
+// After the animation finishes, navigate to the next screen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -113,8 +147,8 @@ class _FeastRegistrationAuthenticationScreenState
             ),
           ),
         );
+
       } catch (e) {
-        print(e);
         setState(() => isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Something went wrong. Please try again.")),
@@ -127,54 +161,126 @@ class _FeastRegistrationAuthenticationScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Authenticate to Register for Feast"),
+        backgroundColor:  Color(0xFF1A2859),
+        foregroundColor: Colors.white,
+        title: Text("Register for ${widget.feastName}"),
+        centerTitle: true,
+
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
-          : Padding(
-        padding: const EdgeInsets.all(8.0),
+          : SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(labelText: "Name"),
-                validator: (value) => value!.isEmpty ? 'Enter Name' : null,
-              ),
-              TextFormField(
-                controller: _batchController,
-                decoration: InputDecoration(labelText: "Batch"),
-                validator: (value) => value!.isEmpty ? 'Enter Batch' : null,
-              ),
-              TextFormField(
-                controller: _departmentController,
-                decoration: InputDecoration(labelText: "Department"),
-                validator: (value) => value!.isEmpty ? 'Enter Department' : null,
-              ),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: "Email"),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) => value!.isEmpty ? 'Enter Email' : null,
-              ),
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(labelText: "Password"),
-                obscureText: true,
-                validator: (value) => value!.isEmpty ? 'Enter Password' : null,
+              Center(
+                child: Icon(Icons.restaurant_menu, size: 80, color: Colors.amber),
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _authenticateAndRegister,
-                child: Text("Register"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
+              Text(
+                "Enter your details to join the feast!",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.deepOrange,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20),
+              _buildTextField(
+                controller: _nameController,
+                label: "Full Name",
+                hintText: "Enter your name",
+                icon: Icons.person,
+                validator: (value) => value!.isEmpty ? "Name is required" : null,
+              ),
+              _buildTextField(
+                controller: _batchController,
+                label: "Batch",
+                hintText: "Enter your batch (e.g., 2023)",
+                icon: Icons.school,
+                validator: (value) => value!.isEmpty ? "Batch is required" : null,
+              ),
+              _buildTextField(
+                controller: _departmentController,
+                label: "Department",
+                hintText: "Enter your department",
+                icon: Icons.business,
+                validator: (value) =>
+                value!.isEmpty ? "Department is required" : null,
+              ),
+              _buildTextField(
+                controller: _emailController,
+                label: "Email",
+                hintText: "Enter your university email",
+                icon: Icons.email,
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) => value!.isEmpty ? "Email is required" : null,
+              ),
+              _buildTextField(
+                controller: _passwordController,
+                label: "Password",
+                hintText: "Enter your password",
+                icon: Icons.lock,
+                obscureText: true,
+                validator: (value) => value!.isEmpty ? "Password is required" : null,
+              ),
+              SizedBox(height: 30),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _authenticateAndRegister,
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    backgroundColor: Color(0xFF1A2859),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: Text(
+                    "Register for Feast",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hintText,
+    required IconData icon,
+    TextInputType keyboardType = TextInputType.text,
+    bool obscureText = false,
+    required String? Function(String?) validator,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        obscureText: obscureText,
+        decoration: InputDecoration(
+          labelText: label,
+          hintText: hintText,
+          prefixIcon: Icon(icon, color: Colors.deepOrange),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.deepOrange),
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        validator: validator,
       ),
     );
   }

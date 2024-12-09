@@ -24,6 +24,7 @@ class OrderConfirmationPage extends StatefulWidget {
 
 class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
 
+
   //Generate PDF
   Future<void> _generatePdf(BuildContext context) async {
     final pdf = pw.Document();
@@ -158,7 +159,8 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Order Confirmation', style: TextStyle(fontFamily: 'Roboto', fontWeight: FontWeight.bold, fontSize: 24,color: Colors.blueGrey[50],)),
-        backgroundColor: Colors.blueGrey, // Deep blue-grey for professionalism
+        backgroundColor:  Color(0xFF1A2859),
+        foregroundColor: Colors.white,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () async {
@@ -176,12 +178,14 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blueGrey.shade200, Colors.blueGrey.shade100], // Neutral gradient
+            colors: [Colors.grey.shade50, Colors.grey.shade50], // Neutral gradient
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
         ),
+
         padding: const EdgeInsets.all(16.0),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -190,9 +194,10 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Text(
                 'Order Number: ${widget.orderNumber}',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blueGrey[400]),
+                style: TextStyle(fontSize: 22, fontStyle: FontStyle.italic, color: Colors.blueGrey[500],fontWeight: FontWeight.w400),
               ),
             ),
+            Divider(),
             SizedBox(height: 10),
 
             // Ordered Items Section
@@ -200,6 +205,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
               'Ordered Items:',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.blueGrey[700]),
             ),
+
             SizedBox(height: 15),
 
             Expanded(
@@ -209,20 +215,21 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
                   var item = widget.orderDetails[index];
                   return Card(
                     elevation: 5,
+                      color: Colors.yellow[400],
                     margin: EdgeInsets.symmetric(vertical: 8),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: ListTile(
                       contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                      leading: Icon(Icons.fastfood, color: Colors.blueGrey), // Blue-grey color for icon
+                      leading: Icon(Icons.fastfood, color: Colors.orange[900]), // Blue-grey color for icon
                       title: Text(
                         item['name'],
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text(
                         'Qty: ${item['quantity']} - Price: Tk ${item['price']} ',
-                        style: TextStyle(color: Colors.black54),
+                        style: TextStyle(color: Colors.black54,fontWeight: FontWeight.w500),
                       ),
                       trailing: Text(
                         'Total: Tk ${(item['price'] * item['quantity']).toStringAsFixed(2)} ',
@@ -243,6 +250,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blueGrey[400]), // Professional color
               ),
             ),
+            Divider(),
             SizedBox(height: 30),
 
             // Centered Download PDF Button
@@ -257,7 +265,7 @@ class _OrderConfirmationPageState extends State<OrderConfirmationPage> {
                   backgroundColor: Colors.green,  // Green button for professionalism
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ),

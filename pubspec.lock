@@ -65,6 +65,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  carousel_slider:
+    dependency: "direct main"
+    description:
+      name: carousel_slider
+      sha256: "7b006ec356205054af5beaef62e2221160ea36b90fb70a35e4deacd49d0349ae"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.0"
   characters:
     dependency: transitive
     description:
@@ -364,10 +372,10 @@ packages:
     dependency: transitive
     description:
       name: http
-      sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
+      sha256: b9c29a161230ee03d3ccf545097fccd9b87a5264228c5d348202e0f0c28f9010
       url: "https://pub.dev"
     source: hosted
-    version: "0.13.6"
+    version: "1.2.2"
   http_parser:
     dependency: transitive
     description:
@@ -488,6 +496,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
+  lottie:
+    dependency: "direct main"
+    description:
+      name: lottie
+      sha256: fa39707f36786707b01eca7626d2c16c32aa603b3f3a146518518458847dc127
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.2.0"
   matcher:
     dependency: transitive
     description:
@@ -837,6 +853,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
+  typewritertext:
+    dependency: "direct main"
+    description:
+      name: typewritertext
+      sha256: c6b90cdc9f7fd7ae3235d9c926012000f7a1765cd49d67b78370dc61123212b2
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.9"
   uuid:
     dependency: transitive
     description:

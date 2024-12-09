@@ -7,6 +7,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:open_file/open_file.dart';
+import 'feast_registration_screen.dart';
 
 // Main Screen with Registration Ticket UI
 class FeastRegistrationSuccessfulScreen extends StatelessWidget {
@@ -71,10 +72,11 @@ class FeastRegistrationSuccessfulScreen extends StatelessWidget {
               children: [
                 // Title: Centered and styled
                 pw.Text(
-                  ' $feastName ',
+                  ' $feastName Feast',
                   style: pw.TextStyle(
-                    fontSize: 64,
+                    fontSize: 44,
                     fontWeight: pw.FontWeight.bold,
+                    color: PdfColors.green, // Adds green color to the text
                   ),
                 ),
                 pw.SizedBox(height: 40),
@@ -103,6 +105,11 @@ class FeastRegistrationSuccessfulScreen extends StatelessWidget {
                         'Name: $name',
                         style: pw.TextStyle(fontSize: 26, fontWeight: pw.FontWeight.bold),
                       ),
+
+
+                      pw.SizedBox(height: 10), // Adds padding
+                      // Horizontal dashed line
+                      pw.SizedBox(height: 10), // Adds padding
                       pw.Text(
                         'Batch: $batch',
                         style: pw.TextStyle(fontSize: 26),
@@ -140,7 +147,7 @@ class FeastRegistrationSuccessfulScreen extends StatelessWidget {
                 ),
                 pw.SizedBox(height: 60),
                 pw.Text(
-                  '© Jahangirnagar University | Celebrate the Feast with Joy 🎊',
+                  '© Jahangirnagar University | Celebrate the Feast with Joy',
                   style: pw.TextStyle(
                     fontSize: 19,
                     color: PdfColors.grey,
@@ -150,6 +157,7 @@ class FeastRegistrationSuccessfulScreen extends StatelessWidget {
             ),
           );
         },
+
       ),
     );
 
@@ -174,14 +182,26 @@ class FeastRegistrationSuccessfulScreen extends StatelessWidget {
   }
 
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.orange[50],
       appBar: AppBar(
-        title: Text("🎉 Feast Entry Ticket 🎉"),
-        backgroundColor: Colors.deepOrange,
+        title: Text(" Feast Coupon "),
+        backgroundColor: Color(0xFF1A2859), // Customized AppBar color
+        foregroundColor: Colors.white,
         centerTitle: true,
+        leading: IconButton( // <-- Added custom back button
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            // Redirect to FeastRegistrationScreen when back button is pressed
+            Navigator.pushReplacement( // <-- Navigating to FeastRegistrationScreen
+              context,
+              MaterialPageRoute(builder: (context) => FeastRegistrationScreen()),
+            );
+          },
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -219,7 +239,7 @@ class FeastRegistrationSuccessfulScreen extends StatelessWidget {
         padding: EdgeInsets.all(10),
         color: Colors.grey[200],
         child: Text(
-          "© Jahangirnagar University | Celebrate the Feast with Joy 🎊",
+          "© Jahangirnagar University",
           style: TextStyle(
             color: Colors.grey[700],
             fontSize: 14,
@@ -238,55 +258,94 @@ class FeastRegistrationSuccessfulScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         margin: EdgeInsets.symmetric(horizontal: 16),
-        color: Colors.deepOrange[100],
+        color: Colors.orange[50],
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.event, color: Colors.deepOrange, size: 50),
-              SizedBox(height: 10),
+              Icon(Icons.event, color: Colors.redAccent, size: 60),
+              SizedBox(height: 12),
               Text(
-                "$feastName 🎉",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                "$feastName",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red[700],
+                  letterSpacing: 1.2,
+                ),
               ),
               Divider(
-                height: 20,
-                color: Colors.orange,
+                height: 30,
+                thickness: 1.5,
+                color: Colors.orangeAccent,
               ),
               ListTile(
-                leading: Icon(Icons.person),
-                title: Text("Name: $name", style: TextStyle(fontSize: 16)),
+                leading: Icon(Icons.person, color: Colors.green),
+                title: Text(
+                  "Name: $name",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.brown[700],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
               ListTile(
-                leading: Icon(Icons.calendar_today),
-                title: Text("Date: $feastDate", style: TextStyle(fontSize: 16)),
+                leading: Icon(Icons.calendar_today, color: Colors.blue),
+                title: Text(
+                  "Date: $feastDate",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.brown[700],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
               ListTile(
-                leading: Icon(Icons.access_time),
-                title: Text("Time: $feastTime", style: TextStyle(fontSize: 16)),
+                leading: Icon(Icons.access_time, color: Colors.purple),
+                title: Text(
+                  "Time: $feastTime",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.brown[700],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
               ListTile(
-                leading: Icon(Icons.attach_money),
-                title: Text("Price: \$$price", style: TextStyle(fontSize: 16)),
+                leading: Icon(Icons.attach_money, color: Colors.orange),
+                title: Text(
+                  "Price: \$$price",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.brown[700],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
               SizedBox(height: 20),
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
+                  backgroundColor: Colors.deepOrange,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
                 onPressed: () => _generatePDF(context),
-                icon: Icon(Icons.picture_as_pdf),
-                label: Text("Download Entry Ticket"),
+                icon: Icon(Icons.picture_as_pdf, color: Colors.yellowAccent),
+                label: Text(
+                  "Download Entry Ticket",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),
         ),
       ),
+
     );
   }
 }

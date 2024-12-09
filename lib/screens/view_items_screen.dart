@@ -62,8 +62,13 @@ class ViewItemsScreen extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('View Items'),
+          title: Text('View Items', style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.deepPurple,
+          foregroundColor: Colors.white,
           bottom: TabBar(
+            indicatorColor: Colors.white,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white70,
             tabs: ['Breakfast', 'Lunch', 'Dinner']
                 .map((type) => Tab(text: type))
                 .toList(),
@@ -74,40 +79,108 @@ class ViewItemsScreen extends StatelessWidget {
             return StreamBuilder<QuerySnapshot>(
               stream: mealsRef.where('type', isEqualTo: type).snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
-                if (snapshot.data!.docs.isEmpty) return Center(child: Text('No $type items found.'));
+                if (!snapshot.hasData) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.data!.docs.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'No $type items found.',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                  );
+                }
 
                 return ListView(
+                  padding: EdgeInsets.all(8.0),
                   children: snapshot.data!.docs.map((doc) {
                     final data = doc.data() as Map<String, dynamic>;
                     return Card(
-                      child: ListTile(
-                        leading: Image.network(data['imageUrl'], width: 50, height: 50),
-                        title: Text(data['name']),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Quantity: ${data['quantity']}'),
-                            Text('Price: Tk ${data['price']}'),
-                          ],
-                        ),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.edit, color: Colors.blue),
-                              onPressed: () => _editQuantity(
-                                context,
-                                doc.id,
-                                data['quantity'],
+                      margin: EdgeInsets.symmetric(vertical: 8.0),
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          // Image row (full-width, without cropping)
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(
+                              data['imageUrl'],
+                              width: double.infinity, // Full-width image
+                              height: 200, // Adjust height to your preference
+                              fit: BoxFit.cover,
+                              loadingBuilder: (BuildContext context, Widget child,
+                                  ImageChunkEvent? loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child;
+                                } else {
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      value: loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress.cumulativeBytesLoaded /
+                                          (loadingProgress.expectedTotalBytes ?? 1)
+                                          : null
+                                          : null,
+                                    ),
+                                  );
+                                }
+                              },
+                              errorBuilder: (context, error, stackTrace) => Icon(
+                                Icons.broken_image,
+                                color: Colors.grey,
+                                size: 60,
                               ),
                             ),
-                            IconButton(
-                              icon: Icon(Icons.delete, color: Colors.red),
-                              onPressed: () => _deleteMeal(doc.id, data['imageUrl']),
+                          ),
+                          // Text info row
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListTile(
+                              title: Text(
+                                data['name'],
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'Quantity: ${data['quantity']}',
+                                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                                  ),
+                                  Text(
+                                    'Price: Tk ${data['price']}',
+                                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                                  ),
+                                ],
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.edit, color: Colors.blue),
+                                    onPressed: () => _editQuantity(
+                                      context,
+                                      doc.id,
+                                      data['quantity'],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    onPressed: () => _deleteMeal(doc.id, data['imageUrl']),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   }).toList(),

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lottie/lottie.dart'; // Lottie package for animations
 import 'dart:io';
+import 'dashboard_screen.dart';
+
 
 class AddFeastScreen extends StatefulWidget {
   @override
@@ -14,8 +17,9 @@ class _AddFeastScreenState extends State<AddFeastScreen> {
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _registrationDeadlineController = TextEditingController();
   final TextEditingController _feastTimeController = TextEditingController();
-  final TextEditingController _feastDateController = TextEditingController(); // Added Feast Date Controller
+  final TextEditingController _feastDateController = TextEditingController();
   File? _image;
+  bool _isLoading = false; // Loading state
 
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -54,7 +58,7 @@ class _AddFeastScreenState extends State<AddFeastScreen> {
         _priceController.text.isEmpty ||
         _registrationDeadlineController.text.isEmpty ||
         _feastTimeController.text.isEmpty ||
-        _feastDateController.text.isEmpty || // Check if Feast Date is entered
+        _feastDateController.text.isEmpty ||
         _image == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Please fill all fields and select an image.'),
@@ -62,6 +66,10 @@ class _AddFeastScreenState extends State<AddFeastScreen> {
       ));
       return;
     }
+
+    setState(() {
+      _isLoading = true; // Show loading animation
+    });
 
     try {
       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
@@ -74,16 +82,39 @@ class _AddFeastScreenState extends State<AddFeastScreen> {
         'price': double.parse(_priceController.text),
         'registrationDeadline': _registrationDeadlineController.text,
         'feastTime': _feastTimeController.text,
-        'feastDate': _feastDateController.text, // Added Feast Date to database submission
+        'feastDate': _feastDateController.text,
         'imageUrl': imageUrl,
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Feast added successfully!'),
-        backgroundColor: Colors.green,
-      ));
+      setState(() {
+        _isLoading = false; // Hide loading animation
+      });
+
+      // Show success animation
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Lottie.asset('assets/success.json', repeat: false),
+              Text('Feast added successfully!', textAlign: TextAlign.center),
+            ],
+          ),
+        ),
+      );
+      await Future.delayed(Duration(seconds: 2));
       Navigator.pop(context);
+
+      // Navigate to DashboardScreen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => DashboardScreen()),
+      );
     } catch (e) {
+      setState(() {
+        _isLoading = false; // Hide loading animation
+      });
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Error: ${e.toString()}'),
         backgroundColor: Colors.red,
@@ -94,83 +125,110 @@ class _AddFeastScreenState extends State<AddFeastScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Add Feast')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: [
-            GestureDetector(
-              onTap: _pickImage,
-              child: _image == null
-                  ? CircleAvatar(
-                radius: 50,
-                backgroundColor: Colors.grey[300],
-                child: Icon(Icons.camera_alt, size: 50),
-              )
-                  : Image.file(_image!, height: 200, fit: BoxFit.cover),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Feast Name', border: OutlineInputBorder()),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _feastDateController, // Feast Date
-              decoration: InputDecoration(
-                labelText: 'Feast Date',
-                border: OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.calendar_today),
-                  onPressed: () => _pickDate(_feastDateController),
-                ),
-              ),
-              readOnly: true,
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _priceController,
-              decoration: InputDecoration(labelText: 'Coupon Price (Tk)', border: OutlineInputBorder()),
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _registrationDeadlineController,
-              decoration: InputDecoration(
-                labelText: 'Registration Deadline',
-                border: OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.calendar_today),
-                  onPressed: () => _pickDate(_registrationDeadlineController),
-                ),
-              ),
-              readOnly: true,
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _feastTimeController,
-              decoration: InputDecoration(
-                labelText: 'Feast Start Time',
-                border: OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.access_time),
-                  onPressed: () => _pickTime(_feastTimeController),
-                ),
-              ),
-              readOnly: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _addFeast,
-              child: Text('Add Feast'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-                backgroundColor: Colors.green,
-              ),
-            ),
-          ],
-        ),
+      appBar: AppBar(
+        title: Text('Add Feast'),
+        backgroundColor: Color(0xFF1A2859),
+        foregroundColor: Colors.white,
       ),
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ListView(
+              children: [
+                GestureDetector(
+                  onTap: _pickImage,
+                  child: _image == null
+                      ? Container(
+                    height: 150,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Icon(Icons.camera_alt, size: 50),
+                    ),
+                  )
+                      : ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.file(
+                      _image!,
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                _buildTextField(_nameController, 'Feast Name'),
+                SizedBox(height: 20),
+                _buildTextField(
+                  _feastDateController,
+                  'Feast Date',
+                  isReadOnly: true,
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.calendar_today),
+                    onPressed: () => _pickDate(_feastDateController),
+                  ),
+                ),
+                SizedBox(height: 20),
+                _buildTextField(_priceController, 'Coupon Price (Tk)', isNumber: true),
+                SizedBox(height: 20),
+                _buildTextField(
+                  _registrationDeadlineController,
+                  'Registration Deadline',
+                  isReadOnly: true,
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.calendar_today),
+                    onPressed: () => _pickDate(_registrationDeadlineController),
+                  ),
+                ),
+                SizedBox(height: 20),
+                _buildTextField(
+                  _feastTimeController,
+                  'Feast Start Time',
+                  isReadOnly: true,
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.access_time),
+                    onPressed: () => _pickTime(_feastTimeController),
+                  ),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _addFeast,
+                  child: Text('Add Feast'),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(double.infinity, 50),
+                    backgroundColor: Color(0xFF1A2859),
+                    foregroundColor: Colors.white,// Rectangular button
+                    textStyle: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_isLoading)
+            Center(
+              child: Lottie.asset('assets/LoadingBalls.json'),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String labelText,
+      {bool isReadOnly = false, bool isNumber = false, Widget? suffixIcon}) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(),
+        suffixIcon: suffixIcon,
+      ),
+      readOnly: isReadOnly,
+      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
     );
   }
 }
