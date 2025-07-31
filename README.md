@@ -1,6 +1,11 @@
 # 🍽️ Smart Meal & Feast Manager App
 
+
 An Android application built using **Android Studio**, **Firebase Authentication**, **Firebase Firestore**, and **PDF generation**, aimed at simplifying daily meal management and feast registration for university halls.
+<p align="center">
+    <img src="https://github.com/Akila-Nipo/django_temporary/blob/main/Mobile%20Application%20Development%20Laboratory.pptx.png" alt="project logo">
+</p>
+
 
 ## 🚀 Features
 
@@ -14,6 +19,11 @@ An Android application built using **Android Studio**, **Firebase Authentication
   - Place meal orders easily
   - Download meal coupons as PDFs
 
+<p align="center">
+    <img src="https://github.com/Akila-Nipo/django_temporary/blob/main/Mobile%20Application%20Development%20Laboratory.pptx%20(1).png" alt="project logo">
+</p>
+
+
 ### 🔹 Feast Registration & Coupon System
 - Super users:
   - Add feast events with deadlines, images, and prices
@@ -22,11 +32,20 @@ An Android application built using **Android Studio**, **Firebase Authentication
   - Register for feasts via the app
   - Receive downloadable, unique PDF coupons
   - Register only once per feast (anti-duplicate protection)
+ 
+  - <p align="center">
+    <img src="https://github.com/Akila-Nipo/django_temporary/blob/main/Mobile%20Application%20Development%20Laboratory.pptx%20(2).png" alt="project logo">
+</p>
+
+
 
 ### 🔹 Anti-Fraud Mechanisms
 - Prevents multiple feast registrations by the same user
 - Searchable order and coupon records
 - Inactive meal and feast buttons post-deadline or unavailability
+  <p align="center">
+    <img src="https://github.com/Akila-Nipo/django_temporary/blob/main/Mobile%20Application%20Development%20Laboratory.pptx%20(3).png" alt="project logo">
+</p>
 
 ## 🛠️ Built With
 - **Android Studio (Java)**
