@@ -48,7 +48,7 @@ An Android application built using **Android Studio**, **Firebase Authentication
 </p>
 
 ## 🛠️ Built With
-- **Android Studio (Java)**
+- **Android Studio **
 - **Firebase Authentication**
 - **Cloud Firestore**
 - **Firebase Storage**
